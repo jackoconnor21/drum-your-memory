@@ -12,3 +12,9 @@ the key on your screen, giving you a visual representation of which sound is bei
 	- Add a leaderboard
 - Introduce a difficulty system
 - Style the game
+
+## Notes
+If you clone this game, be aware you will need to have npm installed on your system.
+Navigate to the root of the project directory using the terminal and run npm install.
+For editing SCSS / JavaScript you will need to also run 'gulp' from the command line (after running npm install),
+this will run the compiler.
