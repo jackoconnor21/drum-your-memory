@@ -1,0 +1,36 @@
+{
+  "name": "front-end",
+  "version": "1.0.0",
+  "description": "front-end ready site with es6 and SCSS",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "es6",
+    "SCSS"
+  ],
+  "author": "Jack O'Connor",
+  "license": "ISC",
+  "devDependencies": {
+    "autobind-decorator": "^1.3.3",
+    "autoprefixer": "^6.4.1",
+    "babel-core": "^6.14.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
+    "cssnano": "^3.7.4",
+    "eslint": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-plumber": "^1.1.0",
+    "gulp-postcss": "^6.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "babel-preset-es2015": "^6.14.0"
+  }
+}
