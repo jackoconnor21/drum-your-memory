@@ -16,7 +16,12 @@ var isPlaying = false;
 var canPress = true;
 
 // Set the lives limit
-var lives = 3;
+var gameLives = 3;
+
+// If a game has started, set to true until fully finished
+var inGame = false;
+
+var score = 0;
 
 // Remove the transition class of transforming entities
 const removeTransition = (e) => {
@@ -59,18 +64,27 @@ const playSound = (e) => {
 					let newLevel = parseInt(playBtn.getAttribute('data-level'))+1;
 					playBtn.setAttribute('data-level', newLevel);
 					playBtn.textContent = "Play level " + newLevel;
+
+					score += (3+pressedKeys.length) * 100;
 				} else {
 					alert('failure');
 
 					// If the user has is unsucessful, remove one of their lives
-					lives--;
+					removeLife();
+
+					score -= (pressedKeys.length*20);
 
 					// If the user has no lives left, reset their level to 1
-					if (lives == 0) {
+					if (gameLives == 0) {
 						playBtn.setAttribute('data-level', 1);
 						playBtn.textContent = "Play level " + 1;
+						inGame = false;
+						gameLives = 3;
+						document.getElementById('lives').innerHTML = '';
 					}
 				}
+
+				document.getElementById('point-score').innerHTML = score;
 
 				// Once the game has ended, reset the pressed keys array and set is playing to false
 				pressedKeys = [];
@@ -116,6 +130,32 @@ const playMemoryKey = (length, offset) => {
 	}, 1000);
 }
 
+
+// This function will add the visuals for the game lives that have been given once the game begins.
+const addLives = () => {
+	let i = 1;
+	let lifeHolder = document.getElementById('lives');
+	while (i <= gameLives) {
+		let lifeImage = document.createElement('img');
+		lifeImage.src = 'images/like.png';
+		lifeImage.id = 'life-'+i;
+		lifeHolder.appendChild(lifeImage);
+		i++;
+	}
+
+	inGame = true;
+}
+
+
+// Tjos function will remove a life visually and programatically from the gameLives variable.
+const removeLife = () => {
+	let life = document.getElementById('life-'+gameLives);
+	let nolife = document.createElement('img');
+	nolife.src = 'images/life-lost.png';
+	document.getElementById('lives').replaceChild(nolife, life);
+	gameLives--;
+}
+
 // When a key is pressed, run the given function.
 window.addEventListener('keydown', playSound);
 
@@ -153,6 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		// If the game has already started, do not run anything in this function.
 		if (isPlaying) 
 			return; 
+
+		// Add the lives to the top of the board if the game is just beginning.
+		if (!inGame) addLives();
 
 		isPlaying = true;
 		canPress = false;

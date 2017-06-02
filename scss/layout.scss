@@ -10,6 +10,29 @@ html, body {
 	font-family: helvetica;
 }
 
+
+#stats-bar {
+	overflow: auto;
+	min-height: 50px;
+	max-width: 1000px;
+	margin: 0 auto;
+	#lives {
+		float: left; 
+		img {
+			height: 30px;
+			width: 30px;
+			margin: 10px 3px;
+		}
+	}
+	#point-score {
+		float: right;
+		margin: 10px;
+		padding: 10px;
+		background: rgba(0, 0, 0, .4);
+		color: #FFFFFF;
+	}
+}
+
 #note-holder {
 	display: flex;
 	justify-content: center;
