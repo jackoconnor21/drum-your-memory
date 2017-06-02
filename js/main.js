@@ -21,6 +21,8 @@ var gameLives = 3;
 // If a game has started, set to true until fully finished
 var inGame = false;
 
+var beginningHighScore = localStorage.getItem('highscore');
+
 var score = 0;
 
 // Remove the transition class of transforming entities
@@ -61,30 +63,34 @@ const playSound = (e) => {
 			setTimeout(function() {
 				if (memoryKeys.equals(pressedKeys)) {
 					alert('congrats!');
+
+					// Set the new level as the current level plus one.
 					let newLevel = parseInt(playBtn.getAttribute('data-level'))+1;
 					playBtn.setAttribute('data-level', newLevel);
 					playBtn.textContent = "Play level " + newLevel;
 
-					score += (3+pressedKeys.length) * 100;
+					// The score system will work by multiplying the amount of things to remember by 100, 
+					// and adding the amount of things to remember minus 2 (which equals the level number) multiplied by 100
+					score += (pressedKeys.length * 100) + (pressedKeys.length - 2) * 10;
 				} else {
 					alert('failure');
 
 					// If the user has is unsucessful, remove one of their lives
 					removeLife();
 
-					score -= (pressedKeys.length*20);
-
-					// If the user has no lives left, reset their level to 1
+					// If the user has no lives left, end the game
 					if (gameLives == 0) {
-						playBtn.setAttribute('data-level', 1);
-						playBtn.textContent = "Play level " + 1;
-						inGame = false;
-						gameLives = 3;
-						document.getElementById('lives').innerHTML = '';
+						endGame();
+
+						localStorage.setItem('highscore', score);
+					} else {
+						// Remove points based on the amount of things needed to remember multiplied by 20.
+						score -= (pressedKeys.length*20);
 					}
 				}
 
-				document.getElementById('point-score').innerHTML = score;
+				// Set the score in the field
+				document.querySelector('#point-score span').innerHTML = score;
 
 				// Once the game has ended, reset the pressed keys array and set is playing to false
 				pressedKeys = [];
@@ -94,6 +100,23 @@ const playSound = (e) => {
 			}, 200);
 		}
 	}
+}
+
+const endGame = () => {
+	playBtn.setAttribute('data-level', 1);
+	playBtn.textContent = "Play level " + 1;
+
+	// Set in game to false
+	inGame = false;
+
+	// Set game lives back to default
+	gameLives = 3;
+
+	// Remove lives from the GUI
+	document.getElementById('lives').innerHTML = '';
+
+	// Hide the end game button
+	document.getElementById('stopGame').classList.remove('hidden');
 }
 
 // Based on the passed key, this function will play the sound and create the associated animation for an item on the sound card
@@ -161,6 +184,8 @@ window.addEventListener('keydown', playSound);
 
 document.addEventListener('DOMContentLoaded', () => {
 
+	document.querySelector('#highscore span').innerHTML = localStorage.getItem('highscore') || 0;
+
 	// get the 'play' button, this will hold an attribute which will decide the level the user is on
 	const playBtn = document.getElementById('playBtn');
 
@@ -196,6 +221,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		// Add the lives to the top of the board if the game is just beginning.
 		if (!inGame) addLives();
+
+		// Show the end game button.
+		document.getElementById('stopGame').classList.remove('hidden');
 
 		isPlaying = true;
 		canPress = false;
