@@ -21,9 +21,11 @@ var gameLives = 3;
 // If a game has started, set to true until fully finished
 var inGame = false;
 
-var beginningHighScore = localStorage.getItem('highscore');
-
+// Set initial score to 0
 var score = 0;
+
+// Difficulty levels are 1, 2 and 3. (pending difficulty '2' implementation)
+var difficulty = 1;
 
 // Remove the transition class of transforming entities
 const removeTransition = (e) => {
@@ -44,7 +46,7 @@ const playSound = (e) => {
 
 	const audio = document.querySelector('audio[data-key="' + e.keyCode + '"]');
 	const button = document.querySelector('div[data-key="' + e.keyCode + '"]');
-	if (!audio) 
+	if (!audio)
 		return;
 
 	audio.currentTime = 0;
@@ -71,18 +73,19 @@ const playSound = (e) => {
 
 					// The score system will work by multiplying the amount of things to remember by 100, 
 					// and adding the amount of things to remember minus 2 (which equals the level number) multiplied by 100
-					score += (pressedKeys.length * 100) + (pressedKeys.length - 2) * 10;
+					score += ((pressedKeys.length * 100) + (pressedKeys.length - 2) * 10) + (difficulty*100);
+					if (score > localStorage.getItem('highscore')) {
+						document.querySelector('#highscore span').textContent = score;
+					}
 				} else {
 					alert('failure');
 
-					// If the user has is unsucessful, remove one of their lives
+					// If the user is unsuccessful, remove one of their lives
 					removeLife();
 
 					// If the user has no lives left, end the game
 					if (gameLives == 0) {
 						endGame();
-
-						localStorage.setItem('highscore', score);
 					} else {
 						// Remove points based on the amount of things needed to remember multiplied by 20.
 						score -= (pressedKeys.length*20);
@@ -91,6 +94,7 @@ const playSound = (e) => {
 
 				// Set the score in the field
 				document.querySelector('#point-score span').innerHTML = score;
+				document.getElementById('playBtn').classList.remove('hidden');
 
 				// Once the game has ended, reset the pressed keys array and set is playing to false
 				pressedKeys = [];
@@ -106,6 +110,11 @@ const endGame = () => {
 	playBtn.setAttribute('data-level', 1);
 	playBtn.textContent = "Play level " + 1;
 
+	if (localStorage.getItem('highscore') < score) {
+		localStorage.setItem('highscore', score);
+		document.querySelector('#highscore span').textContent = score;
+	}
+
 	// Set in game to false
 	inGame = false;
 
@@ -116,7 +125,11 @@ const endGame = () => {
 	document.getElementById('lives').innerHTML = '';
 
 	// Hide the end game button
-	document.getElementById('stopGame').classList.remove('hidden');
+	document.getElementById('stopGame').classList.add('hidden');
+
+	// Set current score back to 0
+	score = 0;
+	document.querySelector('#point-score span').textContent = score;
 }
 
 // Based on the passed key, this function will play the sound and create the associated animation for an item on the sound card
@@ -130,8 +143,10 @@ const autoplaySound = (key) => {
 	audio.currentTime = 0;
 	audio.play();
 
-	// Toggle the playing class. (using add may cause a sticky class)
-	button.classList.toggle('playing');
+	// Toggle the playing class. (using .add() may cause a sticky class)
+	if (difficulty < 3) {
+		button.classList.toggle('playing');
+	}
 }
 
 const playMemoryKey = (length, offset) => {
@@ -214,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	// when someone clicks the play button...
-	playBtn.addEventListener('click', function(e) {
+	playBtn.addEventListener('click', e => {
 		// If the game has already started, do not run anything in this function.
 		if (isPlaying) 
 			return; 
@@ -224,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		// Show the end game button.
 		document.getElementById('stopGame').classList.remove('hidden');
+		document.getElementById('playBtn').classList.add('hidden');
 
 		isPlaying = true;
 		canPress = false;
@@ -245,6 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		// call the play memory key function which will play the sound associated with the key in the memoryKeys array
 		playMemoryKey(memoryKeys.length, 0)
 	});
+
+	document.getElementById('stopGame').addEventListener('click', () => {
+		endGame();
+	});
 });
-
-
